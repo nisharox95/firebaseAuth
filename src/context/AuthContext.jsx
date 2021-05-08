@@ -3,12 +3,13 @@ import { auth } from '../firebase';
 import { db } from '../firebase';
  
 const AuthContext = React.createContext({
-                    currentUser: [] , 
+                    currentUser: [] ,
+                    isLoggedIn: false,
                     signUp:(e, p) => {return;},
                     login: (e, p)=> {return;}, 
                     loggedIn: (e) => {return;},
                     logOut: (e) => {return;},
-                    update: (e) => {return;}
+                    update: (e) => {return;},
                     })
 
 export function useAuth() {
@@ -17,20 +18,18 @@ export function useAuth() {
 
 export function AuthProvider({ children }) {
 
-    const [currentUser, setCurrentUser] = useState();
+    const [currentUser, setCurrentUser] = useState([]);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     const loggedIn = async(id) => {
         if(id) {
             return await db.collection("user").doc(id).get()
             .then((doc) => {
                 if (doc.exists) {
-                    console.log("Document data:", doc.data());
                     setCurrentUser(doc.data())
-                } else {
-                    console.log("No such document!");
+                    setIsLoggedIn(true);
                 }
-            }).catch((error) => {
-                console.log("Error getting document:", error);
+            }).catch(() => {
             });
         }
     }
@@ -38,8 +37,9 @@ export function AuthProvider({ children }) {
     const update = async(id, data) => {
         if(id) {
             return await db.collection("user").doc(id).update(data)
-        }
+       }
     }
+
     const signUp = (email, password) => {
         return auth.createUserWithEmailAndPassword(email, password)
     }
@@ -47,11 +47,18 @@ export function AuthProvider({ children }) {
     useEffect(()=>{
         auth.onAuthStateChanged((user) => {
             setCurrentUser(user)
+            if(currentUser.uid !== undefined) {
+                setIsLoggedIn(true)
+            }
+            else{
+                setIsLoggedIn(false)
+            }
         })
-    }, [])
+    }, [currentUser.uid])
  
     
     const login = (email, password)=>{
+        setIsLoggedIn(true)
         return auth.signInWithEmailAndPassword(email, password)
     }
 
@@ -66,6 +73,7 @@ export function AuthProvider({ children }) {
         loggedIn, 
         logOut,
         update,
+        isLoggedIn,
     }
     return(
         <AuthContext.Provider value={value}>

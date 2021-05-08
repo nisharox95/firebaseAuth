@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
-import {Grid, Button, Avatar, Container, Paper, Badge, Modal, Typography, TextField} from '@material-ui/core';
+import {Grid, Button, Avatar, Container, Paper, Badge, Typography, TextField} from '@material-ui/core';
+import Modal from './modal';
 import { Alert } from '@material-ui/lab';
 import Edit from '@material-ui/icons/Edit';
 import {useAuth} from '../context/AuthContext';
@@ -31,12 +32,13 @@ export default function Dashboard() {
     const classes = useStyles();
     const { currentUser, logOut, update, loggedIn } = useAuth()
 
+    const uid = currentUser.uid
     const [firstName, setFirstName] = useState(currentUser.firstName)
     const [lastName, setLastName] = useState(currentUser.lastName)
     const [age, setAge] = useState(currentUser.age);
     const [phNumber, setPhNumber] = useState(currentUser.phNumber)
     const [address, setAddress] = useState(currentUser.address)
-    const [image, setImage] = useState('')
+    const [image, setImage] = useState()
     const [url, setUrl] = useState(currentUser.avatar)
     const [open, setOpen] = useState(false)
     const [error, setError] = useState('')
@@ -58,7 +60,10 @@ export default function Dashboard() {
 
     const handleEdit = async(e) => {
         e.preventDefault()
-        await handleUpload();
+        try{
+        setError('')
+            if(url!==currentUser.avatar)
+            await handleUpload();
         const user = {
             firstName: firstName,
             lastName: lastName,
@@ -67,9 +72,24 @@ export default function Dashboard() {
             address: address,
             avatar: url,
         }
-        await update(currentUser.uid, user)
-        await loggedIn(currentUser.uid);
+        try{      
+            try {
+            await update(uid, user)
+            await loggedIn(uid);
+            }
+            catch(err){
+                setError('Error')
+            }
+        }
+        catch{
+            setError('Failed to Edit Details')
+        }
+        setLoading(false)
         history.push('/dashboard')
+    }
+    catch(err){
+        setError('Failed to Edit Details')
+    }
     }
 
     const handleChange = (e) => {
@@ -105,7 +125,7 @@ export default function Dashboard() {
                 {error}
             </Alert>
             }
-            <form className={classes.form} noValidate>
+            <form className={classes.form} onSubmit={handleEdit} noValidate>
             <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
                 <TextField
@@ -179,7 +199,6 @@ export default function Dashboard() {
                 color="primary"
                 className={classes.submit}
                 disabled={loading}
-                onClick={()=> handleEdit()}
             >
                 Edit Details
             </Button>
@@ -187,7 +206,6 @@ export default function Dashboard() {
                 <Button
                 type="submit"
                 fullWidth
-                // variant="contained"
                 color="primary"
                 onClick={() => signout()}
                 >
@@ -200,38 +218,3 @@ export default function Dashboard() {
         </Container>
     )
 }
-
-        // <Grid container spacing={3}>
-        //     <Grid item xs={12} sm={6}>
-        //     <Avatar style={{width: 60, height: 60}} src={currentUser.avatar} />
-        //     </Grid>
-        //     <Grid item xs={12} sm={6}>
-        //         First Name: {currentUser.firstName}
-        //     </Grid>
-        //     <Grid item xs={12} sm={6}>
-        //         Last Name: {currentUser.lastName}
-        //     </Grid>
-        //     <Grid item xs={12} sm={6}>
-        //         Email: {currentUser.email}
-        //     </Grid>            
-        //     <Grid item xs={12} sm={6}>
-        //         Age: {currentUser.age}
-        //     </Grid>            
-        //     <Grid item xs={12} sm={6}>
-        //         Phone Number: {currentUser.phNumber}
-        //     </Grid>            
-        //     <Grid item xs={12} sm={6}>
-        //         Address: {currentUser.address}
-        //     </Grid>
-        //     <Button
-        //     type="submit"
-        //     fullWidth
-        //     variant="contained"
-        //     color="primary"
-        //     onClick={() => signout()}
-        //     // className={classes.submit}
-        //     // disabled={loading}
-        //   >
-        //     Logout
-        //   </Button>
-        // </Grid>

@@ -1,7 +1,7 @@
-import React, {useState} from 'react';
+import React from 'react';
 import { Dialog, DialogActions, DialogTitle, DialogContent, Button } from '@material-ui/core'
 
-export function Modal(props){
+export default function Modal(props){
 
     return(
     <Dialog 
@@ -22,35 +22,6 @@ export function Modal(props){
           </Button>
           <Button variant='outlined' onClick={() => props.setOpen(false)} color="primary">
             Upload
-          </Button>
-        </DialogActions>
-      </Dialog>
-    )
-}
-
-export function EditModal(props){
-
-    const [open, setOpen] = useState(false)
-
-    return(
-    <Dialog
-        open={open}
-        onClose={() => setOpen(false)}
-      >
-        <DialogTitle style={{ cursor: "move" }} id="draggable-dialog-title">
-          Edit Details
-        </DialogTitle>
-        {/* <DialogContent>
-          <DialogContentText>
-            {props.content}
-          </DialogContentText>
-        </DialogContent> */}
-        <DialogActions>
-          <Button autoFocus onClick={() => setOpen(false)} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={() => props.handleUpdate} color="primary">
-            Update
           </Button>
         </DialogActions>
       </Dialog>

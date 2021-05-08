@@ -12,7 +12,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import { useHistory } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Modal } from './modal';
+import Modal from './modal';
 import { db } from '../firebase';
 import { store } from '../firebase';
 
@@ -38,7 +38,6 @@ const useStyles = makeStyles((theme) => ({
 
 export default function SignUp() {
   const classes = useStyles();
-
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [age, setAge] = useState('')
@@ -83,18 +82,16 @@ export default function SignUp() {
         }
         try{
           await db.collection("user").doc(resp.user.uid).set(user)
-          console.log("Document successfully written!");
           await loggedIn(resp.user.uid);
         }
         catch(err) {
-          console.log("Error writing document: ", err);
+          setError('Error writing document')
         }
         history.push('/dashboard')
       }
     }
     catch(err){
       setError('Failed to sign Up')
-      console.log(err);
     }
     setLoading(false)
   };
@@ -104,11 +101,6 @@ export default function SignUp() {
     setUrl('')
     setOpen(false)
   }
-  // const handleChange = (e) => {
-  //   const pic = e.target.files[0]
-  //       setImage(pic)
-  //       setUrl(pic.name)
-  // }
   const handleChange = (e) => {
     const pic = e.target.files[0]
     setImage(pic)
