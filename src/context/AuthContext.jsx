@@ -47,14 +47,8 @@ export function AuthProvider({ children }) {
     useEffect(()=>{
         auth.onAuthStateChanged((user) => {
             setCurrentUser(user)
-            if(currentUser.uid !== undefined) {
-                setIsLoggedIn(true)
-            }
-            else{
-                setIsLoggedIn(false)
-            }
         })
-    }, [currentUser.uid])
+    }, [])
  
     
     const login = (email, password)=>{

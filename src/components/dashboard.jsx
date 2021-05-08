@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Grid, Button, Avatar, Container, Paper, Badge, Typography, TextField} from '@material-ui/core';
+import {Grid, Button, Avatar, Container, Paper, Badge, Typography, TextField, Snackbar} from '@material-ui/core';
 import Modal from './modal';
 import { Alert } from '@material-ui/lab';
 import Edit from '@material-ui/icons/Edit';
@@ -41,6 +41,7 @@ export default function Dashboard() {
     const [image, setImage] = useState()
     const [url, setUrl] = useState(currentUser.avatar)
     const [open, setOpen] = useState(false)
+    const [openAlert, setOpenAlert] = useState(false)
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
 
@@ -85,6 +86,7 @@ export default function Dashboard() {
             setError('Failed to Edit Details')
         }
         setLoading(false)
+        setOpenAlert(true)
         history.push('/dashboard')
     }
     catch(err){
@@ -102,8 +104,25 @@ export default function Dashboard() {
         };
     };
 
+    const handleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+          return;
+        }
+        setOpenAlert(false);
+    }
+
     return (
         <Container component="main" maxWidth="xs">
+        <Snackbar   
+            anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+                }}
+                open={openAlert} autoHideDuration={4000} onClose={handleClose}>
+            <Alert onClose={handleClose} severity="success">
+                Successfullly Updated
+            </Alert>
+        </Snackbar>
         <Modal handleChange={handleChange} handleUpload={handleUpload} url={url} open={open} setOpen={setOpen}/>
         <Paper spacing={2} className={classes.paper}>
             <Badge

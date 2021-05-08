@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
-import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
 import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import Typography from '@material-ui/core/Typography';
+import {Typography, Snackbar} from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
@@ -38,6 +37,7 @@ export default function SignIn() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [openAlert, setOpenAlert] = useState(false)
   const history = useHistory()
 
   const { login, loggedIn } = useAuth()
@@ -53,15 +53,31 @@ export default function SignIn() {
     }
     catch(err){
       setError('Failed to Login')
-      console.log(err)
     }
+    setOpenAlert(true)
     history.push('/dashboard')
   };
 
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenAlert(false);
+  }
+
   return (
     <Container component="main" maxWidth="xs">
-      <CssBaseline />
-      <div className={classes.paper}>
+      <Snackbar   
+            anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+                }}
+                open={openAlert} autoHideDuration={4000} onClose={handleClose}>
+            <Alert onClose={handleClose} severity="success">
+                Successfullly Logged In
+            </Alert>
+        </Snackbar>
+            <div className={classes.paper}>
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
         </Avatar>

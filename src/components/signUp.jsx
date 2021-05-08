@@ -1,10 +1,6 @@
 import React, { useState } from 'react';
-import Avatar from '@material-ui/core/Avatar';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
+import {Grid, Badge, Avatar, TextField, Snackbar, Button} from '@material-ui/core';
 import Link from '@material-ui/core/Link';
-import Grid from '@material-ui/core/Grid';
-import Badge from '@material-ui/core/Badge';
 import Edit from '@material-ui/icons/Edit';
 import Typography from '@material-ui/core/Typography';
 import { Alert } from '@material-ui/lab';
@@ -50,10 +46,18 @@ export default function SignUp() {
   const [open, setOpen] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [openAlert, setOpenAlert] = useState(false)
 
   const history = useHistory()
 
   const { signUp, loggedIn } = useAuth()
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenAlert(false);
+  }
 
   const handleUpload = async() => {
     const pic = store.ref()
@@ -87,6 +91,7 @@ export default function SignUp() {
         catch(err) {
           setError('Error writing document')
         }
+        setOpenAlert(true)
         history.push('/dashboard')
       }
     }
@@ -113,6 +118,16 @@ export default function SignUp() {
 
   return (
     <Container component="main" maxWidth="xs">
+      <Snackbar   
+            anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+                }}
+                open={openAlert} autoHideDuration={4000} onClose={handleClose}>
+            <Alert onClose={handleClose} severity="success">
+                Successfullly Updated
+            </Alert>
+        </Snackbar>
       <div className={classes.paper}>
       <Modal handleChange={handleChange} url={url} handleCancel={handleCancel} open={open} setOpen={setOpen}/>
         <Badge
